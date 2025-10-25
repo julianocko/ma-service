@@ -1,0 +1,15 @@
+server:
+  port: ${API_PORT:9595}
+spring:
+  profiles:
+    active: ${ENVIRONMENT:dev}
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/maplataformapi
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:postgres}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
