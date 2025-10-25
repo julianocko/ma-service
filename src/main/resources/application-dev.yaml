@@ -1,0 +1,7 @@
+logging:
+  datasource:
+    show-sql: ${SHOW_SQL:false}
+  level:
+    root: ${ROOT_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:info}
+    'com.atuantes.mentes': ${DEFAULT_LOG_LEVEL:debug}
