@@ -4,6 +4,6 @@ import com.atuantes.mentes.user.domain.entity.User;
 
 import java.util.UUID;
 
-public interface UserInsertRepository {
+public interface UserInsert {
     User insert(User user, UUID transactionId);
 }

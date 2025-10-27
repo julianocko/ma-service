@@ -1,9 +1,9 @@
-package com.atuantes.mentes.user.application.usecase;
+package com.atuantes.mentes.user.infraestructure.persistence.implementation;
 
 import com.atuantes.mentes.user.domain.entity.Category;
 import com.atuantes.mentes.user.domain.entity.User;
 import com.atuantes.mentes.user.domain.exception.UserNotFoundException;
-import com.atuantes.mentes.user.domain.service.FindUserByDocument;
+import com.atuantes.mentes.user.infraestructure.persistence.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,27 +12,26 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Given FindUserByDocumentUseCase")
-class FindUserByDocumentUseCaseTest {
+@DisplayName("Given FindUserByDocumentImpl")
+class FindUserByDocumentImplTest {
 
     @Mock
-    private FindUserByDocument findUserByDocument;
+    private UserRepository userRepository;
 
-    private FindUserByDocumentUseCase useCase;
+    private FindUserByDocumentImpl findUserByDocument;
     private UUID transactionId;
     private User expectedUser;
 
     @BeforeEach
     void setUp() {
-        useCase = new FindUserByDocumentUseCase(findUserByDocument);
+        findUserByDocument = new FindUserByDocumentImpl(userRepository);
         transactionId = UUID.randomUUID();
 
         expectedUser = new User();
@@ -51,10 +50,10 @@ class FindUserByDocumentUseCaseTest {
     void whenFindingUserByValidDocument_thenShouldReturnUser() {
         // Given
         String document = "00588380903";
-        when(findUserByDocument.execute(document, transactionId)).thenReturn(expectedUser);
+        when(userRepository.findByDocument(document)).thenReturn(Optional.of(expectedUser));
 
         // When
-        User result = useCase.findUserByDocument(document, transactionId);
+        User result = findUserByDocument.execute(document, transactionId);
 
         // Then
         assertNotNull(result);
@@ -67,7 +66,7 @@ class FindUserByDocumentUseCaseTest {
         assertEquals(expectedUser.getCategory(), result.getCategory());
         assertTrue(result.isActive());
 
-        verify(findUserByDocument, times(1)).execute(document, transactionId);
+        verify(userRepository, times(1)).findByDocument(document);
     }
 
     @Test
@@ -75,54 +74,57 @@ class FindUserByDocumentUseCaseTest {
     void whenFindingNonExistentUser_thenShouldThrowUserNotFoundException() {
         // Given
         String document = "00588380903";
-        when(findUserByDocument.execute(document, transactionId))
-                .thenThrow(new UserNotFoundException("USER-404", "User not found"));
+        when(userRepository.findByDocument(document)).thenReturn(Optional.empty());
 
         // When & Then
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
-            useCase.findUserByDocument(document, transactionId);
+            findUserByDocument.execute(document, transactionId);
         });
 
-        assertEquals("USER-404", exception.getCode());
-        assertEquals("User not found", exception.getMessage());
+        assertNotNull(exception.getCode());
+        assertNotNull(exception.getMessage());
 
-        verify(findUserByDocument, times(1)).execute(document, transactionId);
+        verify(userRepository, times(1)).findByDocument(document);
     }
 
     @Test
-    @DisplayName("When service throws exception Then should propagate exception")
-    void whenServiceThrowsException_thenShouldPropagateException() {
+    @DisplayName("When repository throws exception Then should propagate exception")
+    void whenRepositoryThrowsException_thenShouldPropagateException() {
         // Given
         String document = "00588380903";
-        when(findUserByDocument.execute(document, transactionId))
+        when(userRepository.findByDocument(document))
                 .thenThrow(new RuntimeException("Database error"));
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            useCase.findUserByDocument(document, transactionId);
+            findUserByDocument.execute(document, transactionId);
         });
 
         assertEquals("Database error", exception.getMessage());
 
-        verify(findUserByDocument, times(1)).execute(document, transactionId);
+        verify(userRepository, times(1)).findByDocument(document);
     }
 
     @Test
-    @DisplayName("When finding user with different transaction ids Then should use correct transaction id")
-    void whenFindingUserWithDifferentTransactionIds_thenShouldUseCorrectTransactionId() {
+    @DisplayName("When finding user with different transaction ids Then should find user independently")
+    void whenFindingUserWithDifferentTransactionIds_thenShouldFindUserIndependently() {
         // Given
         UUID transactionId1 = UUID.randomUUID();
         UUID transactionId2 = UUID.randomUUID();
         String document = "00588380903";
-        when(findUserByDocument.execute(eq(document), any(UUID.class))).thenReturn(expectedUser);
+        when(userRepository.findByDocument(document)).thenReturn(Optional.of(expectedUser));
 
         // When
-        useCase.findUserByDocument(document, transactionId1);
-        useCase.findUserByDocument(document, transactionId2);
+        User result1 = findUserByDocument.execute(document, transactionId1);
+        User result2 = findUserByDocument.execute(document, transactionId2);
 
         // Then
-        verify(findUserByDocument, times(1)).execute(document, transactionId1);
-        verify(findUserByDocument, times(1)).execute(document, transactionId2);
+        assertNotNull(result1);
+        assertNotNull(result2);
+        assertEquals(expectedUser.getId(), result1.getId());
+        assertEquals(expectedUser.getId(), result2.getId());
+
+        verify(userRepository, times(2)).findByDocument(document);
     }
 
     @Test
@@ -152,12 +154,12 @@ class FindUserByDocumentUseCaseTest {
         user2.setBirthdate(LocalDate.of(1995, 5, 15));
         user2.setCategory(Category.MOTHER);
 
-        when(findUserByDocument.execute(document1, transactionId)).thenReturn(user1);
-        when(findUserByDocument.execute(document2, transactionId)).thenReturn(user2);
+        when(userRepository.findByDocument(document1)).thenReturn(Optional.of(user1));
+        when(userRepository.findByDocument(document2)).thenReturn(Optional.of(user2));
 
         // When
-        User result1 = useCase.findUserByDocument(document1, transactionId);
-        User result2 = useCase.findUserByDocument(document2, transactionId);
+        User result1 = findUserByDocument.execute(document1, transactionId);
+        User result2 = findUserByDocument.execute(document2, transactionId);
 
         // Then
         assertNotNull(result1);
@@ -168,29 +170,8 @@ class FindUserByDocumentUseCaseTest {
         assertEquals(document1, result1.getDocument());
         assertEquals(document2, result2.getDocument());
 
-        verify(findUserByDocument, times(1)).execute(document1, transactionId);
-        verify(findUserByDocument, times(1)).execute(document2, transactionId);
-    }
-
-    @Test
-    @DisplayName("When finding user Then should pass correct parameters to service")
-    void whenFindingUser_thenShouldPassCorrectParametersToService() {
-        // Given
-        String document = "00588380903";
-        when(findUserByDocument.execute(document, transactionId)).thenReturn(expectedUser);
-
-        // When
-        useCase.findUserByDocument(document, transactionId);
-
-        // Then
-        verify(findUserByDocument, times(1)).execute(eq(document), eq(transactionId));
-    }
-
-    @Test
-    @DisplayName("When use case is created Then should have non-null dependency")
-    void whenUseCaseIsCreated_thenShouldHaveNonNullDependency() {
-        // When & Then
-        assertNotNull(useCase.findUserByDocument());
+        verify(userRepository, times(1)).findByDocument(document1);
+        verify(userRepository, times(1)).findByDocument(document2);
     }
 
     @Test
@@ -199,14 +180,16 @@ class FindUserByDocumentUseCaseTest {
         // Given
         String document = "00588380903";
         expectedUser.setActive(false);
-        when(findUserByDocument.execute(document, transactionId)).thenReturn(expectedUser);
+        when(userRepository.findByDocument(document)).thenReturn(Optional.of(expectedUser));
 
         // When
-        User result = useCase.findUserByDocument(document, transactionId);
+        User result = findUserByDocument.execute(document, transactionId);
 
         // Then
         assertNotNull(result);
         assertFalse(result.isActive());
+
+        verify(userRepository, times(1)).findByDocument(document);
     }
 
     @Test
@@ -217,18 +200,17 @@ class FindUserByDocumentUseCaseTest {
 
         for (Category category : Category.values()) {
             expectedUser.setCategory(category);
-            when(findUserByDocument.execute(document, transactionId)).thenReturn(expectedUser);
+            when(userRepository.findByDocument(document)).thenReturn(Optional.of(expectedUser));
 
             // When
-            User result = useCase.findUserByDocument(document, transactionId);
+            User result = findUserByDocument.execute(document, transactionId);
 
             // Then
             assertNotNull(result);
             assertEquals(category, result.getCategory());
         }
 
-        verify(findUserByDocument, times(Category.values().length))
-                .execute(document, transactionId);
+        verify(userRepository, times(Category.values().length)).findByDocument(document);
     }
 
     @Test
@@ -237,12 +219,62 @@ class FindUserByDocumentUseCaseTest {
         // Given
         String document = "00588380903";
         expectedUser.setFullName("José María Ñoño de Souza");
-        when(findUserByDocument.execute(document, transactionId)).thenReturn(expectedUser);
+        when(userRepository.findByDocument(document)).thenReturn(Optional.of(expectedUser));
 
         // When
-        User result = useCase.findUserByDocument(document, transactionId);
+        User result = findUserByDocument.execute(document, transactionId);
 
         // Then
         assertEquals("José María Ñoño de Souza", result.getFullName());
+
+        verify(userRepository, times(1)).findByDocument(document);
+    }
+
+    @Test
+    @DisplayName("When repository returns empty optional Then should throw UserNotFoundException with correct code")
+    void whenRepositoryReturnsEmptyOptional_thenShouldThrowUserNotFoundExceptionWithCorrectCode() {
+        // Given
+        String document = "00588380903";
+        when(userRepository.findByDocument(document)).thenReturn(Optional.empty());
+
+        // When & Then
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            findUserByDocument.execute(document, transactionId);
+        });
+
+        assertNotNull(exception.getCode());
+        assertFalse(exception.getCode().isEmpty());
+
+        verify(userRepository, times(1)).findByDocument(document);
+    }
+
+    @Test
+    @DisplayName("When finding user Then should call repository with correct document")
+    void whenFindingUser_thenShouldCallRepositoryWithCorrectDocument() {
+        // Given
+        String document = "00588380903";
+        when(userRepository.findByDocument(document)).thenReturn(Optional.of(expectedUser));
+
+        // When
+        findUserByDocument.execute(document, transactionId);
+
+        // Then
+        verify(userRepository, times(1)).findByDocument(eq(document));
+    }
+
+    @Test
+    @DisplayName("When finding user multiple times Then should call repository each time")
+    void whenFindingUserMultipleTimes_thenShouldCallRepositoryEachTime() {
+        // Given
+        String document = "00588380903";
+        when(userRepository.findByDocument(document)).thenReturn(Optional.of(expectedUser));
+
+        // When
+        findUserByDocument.execute(document, transactionId);
+        findUserByDocument.execute(document, transactionId);
+        findUserByDocument.execute(document, transactionId);
+
+        // Then
+        verify(userRepository, times(3)).findByDocument(document);
     }
 }

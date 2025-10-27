@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum LogMessage {
 
-    LOG_ERROR("Exception: [{}] - Exception message: [{} - {}] - Transaction ID: [{}]"),
+    LOG_ERROR("Exception: [{}] - Exception message: [{} - {}]"),
     LOG_START_CONTROLLER("START - controller - {} - Transaction ID: {}"),
     LOG_END_CONTROLLER("END - controller - {} - Transaction ID: {}"),
     LOG_START_USE_CASE(" start - use case - {} - Transaction ID: {}"),
