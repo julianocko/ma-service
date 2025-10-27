@@ -1,7 +1,5 @@
 package com.atuantes.mentes.user.presentation.controller;
 
-
-
 import com.atuantes.mentes.user.application.command.CreateUserCommand;
 import com.atuantes.mentes.user.application.usecase.CreateUserUseCase;
 import com.atuantes.mentes.user.domain.entity.User;
@@ -24,6 +22,8 @@ import java.util.UUID;
 @RequestMapping("/user")
 public class UserController {
 
+    private final CreateUserDtoToCommand createUserDtoToCommand;
+
     private final CreateUserUseCase createUserUseCase;
 
     @PostMapping(
@@ -33,7 +33,7 @@ public class UserController {
                                             @RequestBody @Valid CreateUserDto dto) {
         log.info(LogMessage.LOG_START_CONTROLLER.getMessage(), "create user", transactionId);
 
-        CreateUserCommand command = CreateUserDtoToCommand.toCommand(dto);
+        CreateUserCommand command = createUserDtoToCommand.toCommand(dto);
 
         var createdUser = createUserUseCase.createUser(command, transactionId);
 

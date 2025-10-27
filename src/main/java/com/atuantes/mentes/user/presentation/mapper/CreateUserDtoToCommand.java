@@ -7,11 +7,13 @@ import com.atuantes.mentes.user.domain.message.LogMessage;
 import com.atuantes.mentes.user.domain.message.UserErrorMessage;
 import com.atuantes.mentes.user.presentation.dto.CreateUserDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
+@Service
 public class CreateUserDtoToCommand {
 
-    public static CreateUserCommand toCommand(CreateUserDto dto) {
+    public CreateUserCommand toCommand(CreateUserDto dto) {
         try {
             return new CreateUserCommand(
                     dto.fullName(),

@@ -1,26 +1,29 @@
 package com.atuantes.mentes.user.presentation.dto;
 
 import com.atuantes.mentes.user.domain.entity.Category;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import com.atuantes.mentes.user.presentation.util.ValidAge;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
 public record CreateUserDto(
 
-        @NotEmpty(message = "O nome completo é obrigatório")
+        @NotBlank(message = "O nome completo é obrigatório")
         String fullName,
 
-        @NotEmpty(message = "O documento é obrigatório")
+        @NotBlank(message = "O documento é obrigatório")
         String document,
 
-        @NotEmpty(message = "O email é obrigatório")
+        @NotBlank(message = "O email é obrigatório")
+        @Email(message = "O email deve ser válido")
         String email,
 
-        @NotEmpty(message = "O telefone é obrigatório")
+        @NotBlank(message = "O telefone é obrigatório")
         String phone,
 
         @NotNull(message = "A data de nascimento é obrigatória")
+        @Past(message = "A data de nascimento deve ser no passado")
+        @ValidAge(max = 120)
         LocalDate birthdate,
 
         @NotNull(message = "A categoria é obrigatória")

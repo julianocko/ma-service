@@ -2,6 +2,7 @@ package com.atuantes.mentes.user.domain.service;
 
 
 import com.atuantes.mentes.user.domain.exception.UserInvalidDocumentException;
+import com.atuantes.mentes.user.domain.message.LogMessage;
 import com.atuantes.mentes.user.domain.message.UserErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,11 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 public class DocumentValidationService {
 
     public static void documentValidation(String document) throws UserInvalidDocumentException {
+        log.info(LogMessage.LOG_START_SERVICE.getMessage(), "document validation", null);
         if (document == null || document.isBlank()) {
             throw new UserInvalidDocumentException(UserErrorMessage.INVALID_DOCUMENT.getCode(),
                     UserErrorMessage.INVALID_DOCUMENT.getMessage());
         }
         documentVerification(document);
+        log.info(LogMessage.LOG_END_SERVICE.getMessage(), "document validation", null);
     }
 
     private static void documentVerification(String document) throws UserInvalidDocumentException {

@@ -2,13 +2,14 @@ package com.atuantes.mentes.user.application.command;
 
 import com.atuantes.mentes.user.domain.entity.Category;
 import com.atuantes.mentes.user.domain.service.DocumentValidationService;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.UUID;
 
-@NoArgsConstructor
+
+
 @Setter @Getter
 public class CreateUserCommand {
     private String fullName;
@@ -17,6 +18,9 @@ public class CreateUserCommand {
     private String phone;
     private LocalDate birthdate;
     private Category category;
+
+    public CreateUserCommand() {
+    }
 
     public CreateUserCommand(String fullName, String document, String email, String phone, LocalDate birthdate,
                              Category category) {

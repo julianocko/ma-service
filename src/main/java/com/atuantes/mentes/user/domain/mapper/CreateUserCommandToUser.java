@@ -1,15 +1,19 @@
 package com.atuantes.mentes.user.domain.mapper;
 
+import com.atuantes.mentes.user.application.command.CreateUserCommand;
 import com.atuantes.mentes.user.domain.entity.User;
 import com.atuantes.mentes.user.domain.exception.UserIllegalArgumentException;
 import com.atuantes.mentes.user.domain.exception.UserInvalidDocumentException;
 import com.atuantes.mentes.user.domain.message.LogMessage;
 import com.atuantes.mentes.user.domain.message.UserErrorMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
+@Service
 public class CreateUserCommandToUser {
-    public static User toUser(com.atuantes.mentes.user.application.command.CreateUserCommand command) {
+
+    public User toUser(CreateUserCommand command) {
         try {
             return new User(
                     command.getFullName(),
