@@ -2,6 +2,7 @@ package com.atuantes.mentes.user.domain.exception.handler;
 
 import com.atuantes.mentes.user.domain.exception.UserException;
 import com.atuantes.mentes.user.domain.exception.model.ExceptionResponse;
+import com.atuantes.mentes.user.domain.message.LogMessage;
 import com.atuantes.mentes.user.domain.message.UserMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -60,6 +61,7 @@ public class CustomEntityExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(UserException.class)
     public final ResponseEntity<ExceptionResponse> handleUserException(UserException ex, WebRequest request) {
+        log.error(LogMessage.LOG_ERROR.getMessage(), ex.getClass().getName(), ex.getCode(), ex.getMessage());
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .code(ex.getCode())

@@ -5,7 +5,7 @@ import com.atuantes.mentes.user.domain.entity.Category;
 import com.atuantes.mentes.user.domain.entity.User;
 import com.atuantes.mentes.user.domain.exception.UserIllegalArgumentException;
 import com.atuantes.mentes.user.domain.mapper.CreateUserCommandToUser;
-import com.atuantes.mentes.user.domain.service.UserInsertRepository;
+import com.atuantes.mentes.user.domain.service.UserInsert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class CreateUserUseCaseTest {
     private CreateUserCommandToUser createUserCommandToUser;
 
     @Mock
-    private UserInsertRepository userInsertRepository;
+    private UserInsert userInsert;
 
     private CreateUserUseCase useCase;
     private UUID transactionId;
@@ -40,7 +40,7 @@ class CreateUserUseCaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        useCase = new CreateUserUseCase(createUserCommandToUser, userInsertRepository);
+        useCase = new CreateUserUseCase(createUserCommandToUser, userInsert);
         transactionId = UUID.randomUUID();
 
         validCommand = new CreateUserCommand();
@@ -75,7 +75,7 @@ class CreateUserUseCaseTest {
     void whenCreatingUserWithValidCommand_thenShouldReturnCreatedUser() {
         // Given
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenReturn(createdUser);
+        when(userInsert.insert(mappedUser, transactionId)).thenReturn(createdUser);
 
         // When
         User result = useCase.createUser(validCommand, transactionId);
@@ -92,7 +92,7 @@ class CreateUserUseCaseTest {
         assertTrue(result.isActive());
 
         verify(createUserCommandToUser, times(1)).toUser(validCommand);
-        verify(userInsertRepository, times(1)).insert(mappedUser, transactionId);
+        verify(userInsert, times(1)).insert(mappedUser, transactionId);
     }
 
     @ParameterizedTest
@@ -105,7 +105,7 @@ class CreateUserUseCaseTest {
         createdUser.setCategory(category);
 
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenReturn(createdUser);
+        when(userInsert.insert(mappedUser, transactionId)).thenReturn(createdUser);
 
         // When
         User result = useCase.createUser(validCommand, transactionId);
@@ -114,7 +114,7 @@ class CreateUserUseCaseTest {
         assertNotNull(result);
         assertEquals(category, result.getCategory());
         verify(createUserCommandToUser, times(1)).toUser(validCommand);
-        verify(userInsertRepository, times(1)).insert(mappedUser, transactionId);
+        verify(userInsert, times(1)).insert(mappedUser, transactionId);
     }
 
     @Test
@@ -132,7 +132,7 @@ class CreateUserUseCaseTest {
         assertEquals("USER-001", thrown.getCode());
         assertEquals("Invalid document", thrown.getMessage());
         verify(createUserCommandToUser, times(1)).toUser(validCommand);
-        verify(userInsertRepository, never()).insert(any(), any());
+        verify(userInsert, never()).insert(any(), any());
     }
 
     @Test
@@ -141,7 +141,7 @@ class CreateUserUseCaseTest {
         // Given
         RuntimeException exception = new RuntimeException("Database error");
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenThrow(exception);
+        when(userInsert.insert(mappedUser, transactionId)).thenThrow(exception);
 
         // When & Then
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
@@ -150,7 +150,7 @@ class CreateUserUseCaseTest {
 
         assertEquals("Database error", thrown.getMessage());
         verify(createUserCommandToUser, times(1)).toUser(validCommand);
-        verify(userInsertRepository, times(1)).insert(mappedUser, transactionId);
+        verify(userInsert, times(1)).insert(mappedUser, transactionId);
     }
 
     @Test
@@ -158,15 +158,15 @@ class CreateUserUseCaseTest {
     void whenCreatingUser_thenShouldCallMapperBeforeRepository() {
         // Given
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenReturn(createdUser);
+        when(userInsert.insert(mappedUser, transactionId)).thenReturn(createdUser);
 
         // When
         useCase.createUser(validCommand, transactionId);
 
         // Then
-        var inOrder = inOrder(createUserCommandToUser, userInsertRepository);
+        var inOrder = inOrder(createUserCommandToUser, userInsert);
         inOrder.verify(createUserCommandToUser).toUser(validCommand);
-        inOrder.verify(userInsertRepository).insert(mappedUser, transactionId);
+        inOrder.verify(userInsert).insert(mappedUser, transactionId);
     }
 
     @Test
@@ -177,15 +177,15 @@ class CreateUserUseCaseTest {
         UUID transactionId2 = UUID.randomUUID();
 
         when(createUserCommandToUser.toUser(any())).thenReturn(mappedUser);
-        when(userInsertRepository.insert(any(), any())).thenReturn(createdUser);
+        when(userInsert.insert(any(), any())).thenReturn(createdUser);
 
         // When
         useCase.createUser(validCommand, transactionId1);
         useCase.createUser(validCommand, transactionId2);
 
         // Then
-        verify(userInsertRepository, times(1)).insert(mappedUser, transactionId1);
-        verify(userInsertRepository, times(1)).insert(mappedUser, transactionId2);
+        verify(userInsert, times(1)).insert(mappedUser, transactionId1);
+        verify(userInsert, times(1)).insert(mappedUser, transactionId2);
     }
 
     @Test
@@ -246,8 +246,8 @@ class CreateUserUseCaseTest {
 
         when(createUserCommandToUser.toUser(command1)).thenReturn(mappedUser1);
         when(createUserCommandToUser.toUser(command2)).thenReturn(mappedUser2);
-        when(userInsertRepository.insert(mappedUser1, transactionId)).thenReturn(createdUser1);
-        when(userInsertRepository.insert(mappedUser2, transactionId)).thenReturn(createdUser2);
+        when(userInsert.insert(mappedUser1, transactionId)).thenReturn(createdUser1);
+        when(userInsert.insert(mappedUser2, transactionId)).thenReturn(createdUser2);
 
         // When
         User result1 = useCase.createUser(command1, transactionId);
@@ -264,8 +264,8 @@ class CreateUserUseCaseTest {
 
         verify(createUserCommandToUser, times(1)).toUser(command1);
         verify(createUserCommandToUser, times(1)).toUser(command2);
-        verify(userInsertRepository, times(1)).insert(mappedUser1, transactionId);
-        verify(userInsertRepository, times(1)).insert(mappedUser2, transactionId);
+        verify(userInsert, times(1)).insert(mappedUser1, transactionId);
+        verify(userInsert, times(1)).insert(mappedUser2, transactionId);
     }
 
     @Test
@@ -276,7 +276,7 @@ class CreateUserUseCaseTest {
         createdUser.setId(expectedId);
 
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenReturn(createdUser);
+        when(userInsert.insert(mappedUser, transactionId)).thenReturn(createdUser);
 
         // When
         User result = useCase.createUser(validCommand, transactionId);
@@ -291,13 +291,13 @@ class CreateUserUseCaseTest {
     void whenCreatingUser_thenShouldPassMappedUserToRepository() {
         // Given
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenReturn(createdUser);
+        when(userInsert.insert(mappedUser, transactionId)).thenReturn(createdUser);
 
         // When
         useCase.createUser(validCommand, transactionId);
 
         // Then
-        verify(userInsertRepository, times(1)).insert(eq(mappedUser), eq(transactionId));
+        verify(userInsert, times(1)).insert(eq(mappedUser), eq(transactionId));
     }
 
     @Test
@@ -305,7 +305,7 @@ class CreateUserUseCaseTest {
     void whenUseCaseIsCreated_thenShouldHaveNonNullDependencies() {
         // When & Then
         assertNotNull(useCase.createUserCommandToUser());
-        assertNotNull(useCase.userInsertRepository());
+        assertNotNull(useCase.userInsert());
     }
 
     @Test
@@ -317,7 +317,7 @@ class CreateUserUseCaseTest {
         createdUser.setFullName("José María Ñoño de Souza");
 
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenReturn(createdUser);
+        when(userInsert.insert(mappedUser, transactionId)).thenReturn(createdUser);
 
         // When
         User result = useCase.createUser(validCommand, transactionId);
@@ -336,7 +336,7 @@ class CreateUserUseCaseTest {
         createdUser.setBirthdate(today);
 
         when(createUserCommandToUser.toUser(validCommand)).thenReturn(mappedUser);
-        when(userInsertRepository.insert(mappedUser, transactionId)).thenReturn(createdUser);
+        when(userInsert.insert(mappedUser, transactionId)).thenReturn(createdUser);
 
         // When
         User result = useCase.createUser(validCommand, transactionId);

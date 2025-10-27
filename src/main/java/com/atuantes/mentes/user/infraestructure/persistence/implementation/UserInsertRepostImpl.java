@@ -4,7 +4,7 @@ import com.atuantes.mentes.user.domain.entity.User;
 import com.atuantes.mentes.user.domain.exception.UserPersistenceException;
 import com.atuantes.mentes.user.domain.message.LogMessage;
 import com.atuantes.mentes.user.domain.message.UserErrorMessage;
-import com.atuantes.mentes.user.domain.service.UserInsertRepository;
+import com.atuantes.mentes.user.domain.service.UserInsert;
 import com.atuantes.mentes.user.infraestructure.persistence.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.util.UUID;
 @Slf4j
 @Repository
 @AllArgsConstructor
-public class UserInsertRepostImpl implements UserInsertRepository {
+public class UserInsertRepostImpl implements UserInsert {
 
     private final UserRepository userRepository;
 
