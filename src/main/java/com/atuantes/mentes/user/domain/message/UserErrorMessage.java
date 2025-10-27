@@ -19,7 +19,9 @@ public enum UserErrorMessage {
 
     USER_INSERT_ERROR("USER-0005", UserMessage.USER_INSERT_ERROR.getMessage()),
 
-    DUPLICATE_DOCUMENT_ERROR("USER-0006", UserMessage.DUPLICATE_DOCUMENT_ERROR.getMessage())
+    DUPLICATE_DOCUMENT_ERROR("USER-0006", UserMessage.DUPLICATE_DOCUMENT_ERROR.getMessage()),
+
+    USER_NOT_FOUND("USER-0007", "Usuário não encontrado para o documento informado.")
     ;
 
     private final String code;
