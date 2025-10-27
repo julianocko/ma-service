@@ -12,7 +12,8 @@ public enum UserMessage {
     INVALID_DOCUMENT("O documento fornecido é inválido."),
     INVALID_CPF("O documento fornecido não representa um CPF válido."),
     USER_INSERT_ERROR("Ocorreu um erro ao inserir o usuário no repositório."),
-    DUPLICATE_DOCUMENT_ERROR("Já existe um usuário cadastrado com o mesmo documento.");
+    DUPLICATE_DOCUMENT_ERROR("Já existe um usuário cadastrado com o mesmo documento."),
+    ERROR_OCCURS_WHILE_PROCESSING_REQUEST("Ocorreu um erro ao processar a solicitação do usuário.");
 
     private final String message;
 
