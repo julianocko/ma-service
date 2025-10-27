@@ -37,7 +37,7 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleGenericException(Exception ex) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(
                 "INTERNAL-ERROR",
-                ex.getMessage(),
+                "An unexpected error occurred",
                 OffsetDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
