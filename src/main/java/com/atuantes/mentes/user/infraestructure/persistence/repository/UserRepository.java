@@ -17,4 +17,10 @@ public interface UserRepository extends Repository<User, UUID> {
             "FROM users.users WHERE document = :document")
     Optional<User> findByDocument(String document);
 
+    @Query("UPDATE users.users SET full_name=:fullName, email=:email, phone=:phone, birthdate=:birthdate, " +
+            "category=:category, active=:active, updated_at=now() WHERE document=:document " +
+            "RETURNING id, active, full_name, document, email, phone, birthdate, category, created_at, updated_at")
+    Optional<User> updateByDocument(String document, String fullName, String email, String phone, 
+                                    LocalDate birthdate, String category, Boolean active);
+
 }
