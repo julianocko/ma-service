@@ -3,28 +3,29 @@ package com.atuantes.mentes.user.domain.mapper;
 import com.atuantes.mentes.user.application.command.UpdateUserCommand;
 import com.atuantes.mentes.user.domain.entity.User;
 import com.atuantes.mentes.user.domain.exception.UserIllegalArgumentException;
-import com.atuantes.mentes.user.domain.message.LogMessage;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-@Slf4j
+@Component
 public class UpdateUserCommandToUser {
 
     public User toUser(UpdateUserCommand command) {
         try {
-            User user = new User();
-            user.setDocument(command.getDocument());
-            user.setFullName(command.getFullName());
-            user.setEmail(command.getEmail());
-            user.setPhone(command.getPhone());
-            user.setBirthdate(command.getBirthdate());
-            user.setCategory(command.getCategory());
-            user.setActive(command.getActive() != null ? command.getActive() : true);
+            User user = new User(
+                    command.getFullName(),
+                    command.getDocument(),
+                    command.getEmail(),
+                    command.getPhone(),
+                    command.getBirthdate(),
+                    command.getCategory()
+            );
+
+            if (command.getActive() != null && !command.getActive()) {
+                user.setActive(false);
+            }
+
             return user;
         } catch (Exception e) {
-            log.error(LogMessage.LOG_ERROR.getMessage(), e.getClass().getSimpleName(),
-                    "USER-UPDATE-002", e.getMessage(), null);
-            throw new UserIllegalArgumentException("USER-UPDATE-002",
-                    "Erro ao mapear UpdateUserCommand para User");
+            throw new UserIllegalArgumentException("USER-UPDATE-002", "Erro ao mapear UpdateUserCommand para User");
         }
     }
 }

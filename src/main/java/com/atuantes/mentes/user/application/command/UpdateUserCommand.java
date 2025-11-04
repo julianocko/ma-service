@@ -1,7 +1,6 @@
 package com.atuantes.mentes.user.application.command;
 
 import com.atuantes.mentes.user.domain.entity.Category;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

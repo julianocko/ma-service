@@ -61,7 +61,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         validCommand = new UpdateUserCommand();
-        validCommand.setDocument("00588380903");
+        validCommand.setDocument("44249385302");
         validCommand.setFullName("João Silva Updated");
         validCommand.setEmail("joao.updated@test.com");
         validCommand.setPhone("11988888888");
@@ -73,7 +73,7 @@ class UpdateUserByDocumentControllerTest {
         updatedUser.setId(UUID.randomUUID());
         updatedUser.setFullName("João Silva Updated");
         updatedUser.setActive(true);
-        updatedUser.setDocument("00588380903");
+        updatedUser.setDocument("44249385302");
         updatedUser.setEmail("joao.updated@test.com");
         updatedUser.setPhone("11988888888");
         updatedUser.setBirthdate(LocalDate.of(1990, 1, 1));
@@ -84,11 +84,11 @@ class UpdateUserByDocumentControllerTest {
     @DisplayName("When updating user with valid data Then should return 200 OK")
     void whenUpdatingUserWithValidData_thenShouldReturn200Ok() throws Exception {
         // Given
-        when(updateUserDtoToCommand.toCommand(eq("00588380903"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -96,13 +96,13 @@ class UpdateUserByDocumentControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(updatedUser.getId().toString()))
                 .andExpect(jsonPath("$.fullName").value("João Silva Updated"))
-                .andExpect(jsonPath("$.document").value("00588380903"))
+                .andExpect(jsonPath("$.document").value("44249385302"))
                 .andExpect(jsonPath("$.email").value("joao.updated@test.com"))
                 .andExpect(jsonPath("$.phone").value("11988888888"))
                 .andExpect(jsonPath("$.active").value(true))
                 .andExpect(jsonPath("$.category").value("FATHER"));
 
-        verify(updateUserDtoToCommand, times(1)).toCommand(eq("00588380903"), any(UpdateUserDto.class));
+        verify(updateUserDtoToCommand, times(1)).toCommand(eq("44249385302"), any(UpdateUserDto.class));
         verify(updateUserUseCase, times(1)).updateUser(any(UpdateUserCommand.class), eq(transactionId));
     }
 
@@ -110,17 +110,17 @@ class UpdateUserByDocumentControllerTest {
     @DisplayName("When updating user with document containing non-digits Then should normalize document")
     void whenUpdatingUserWithDocumentContainingNonDigits_thenShouldNormalizeDocument() throws Exception {
         // Given
-        when(updateUserDtoToCommand.toCommand(eq("00588380903"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/users/document/005.883.809-03")
+        mockMvc.perform(put("/user/document/442.493.853-02")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(status().isOk());
 
-        verify(updateUserDtoToCommand, times(1)).toCommand(eq("00588380903"), any(UpdateUserDto.class));
+        verify(updateUserDtoToCommand, times(1)).toCommand(eq("44249385302"), any(UpdateUserDto.class));
     }
 
     @Test
@@ -139,11 +139,11 @@ class UpdateUserByDocumentControllerTest {
         validCommand.setActive(false);
         updatedUser.setActive(false);
 
-        when(updateUserDtoToCommand.toCommand(eq("00588380903"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inactiveDto)))
@@ -155,12 +155,12 @@ class UpdateUserByDocumentControllerTest {
     @DisplayName("When updating user that does not exist Then should return 404 NOT FOUND")
     void whenUpdatingUserThatDoesNotExist_thenShouldReturn404NotFound() throws Exception {
         // Given
-        when(updateUserDtoToCommand.toCommand(eq("00588380903"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class)))
-                .thenThrow(new UserNotFoundException("USER-404", "User not found for document 00588380903"));
+                .thenThrow(new UserNotFoundException("USER-404", "User not found for document 44249385302"));
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -171,7 +171,7 @@ class UpdateUserByDocumentControllerTest {
     @DisplayName("When updating user without transaction id Then should return 400 BAD REQUEST")
     void whenUpdatingUserWithoutTransactionId_thenShouldReturn400BadRequest() throws Exception {
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(status().isBadRequest());
@@ -194,7 +194,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -218,7 +218,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -239,7 +239,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -260,7 +260,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -271,11 +271,11 @@ class UpdateUserByDocumentControllerTest {
     @DisplayName("When response is returned Then should have correct content type")
     void whenResponseIsReturned_thenShouldHaveCorrectContentType() throws Exception {
         // Given
-        when(updateUserDtoToCommand.toCommand(eq("00588380903"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/users/document/00588380903")
+        mockMvc.perform(put("/user/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))

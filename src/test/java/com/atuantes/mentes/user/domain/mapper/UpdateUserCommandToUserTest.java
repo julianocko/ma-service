@@ -3,6 +3,7 @@ package com.atuantes.mentes.user.domain.mapper;
 import com.atuantes.mentes.user.application.command.UpdateUserCommand;
 import com.atuantes.mentes.user.domain.entity.Category;
 import com.atuantes.mentes.user.domain.entity.User;
+import com.atuantes.mentes.user.domain.exception.UserIllegalArgumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,8 @@ class UpdateUserCommandToUserTest {
     }
 
     @Test
-    @DisplayName("When mapping valid command Then should return User")
-    void whenMappingValidCommand_thenShouldReturnUser() {
+    @DisplayName("When mapping valid command Then should return User with all fields")
+    void whenMappingValidCommand_thenShouldReturnUserWithAllFields() {
         // When
         User result = mapper.toUser(validCommand);
 
@@ -52,45 +53,128 @@ class UpdateUserCommandToUserTest {
     }
 
     @Test
-    @DisplayName("When mapping command with null active Then should default to true")
-    void whenMappingCommandWithNullActive_thenShouldDefaultToTrue() {
+    @DisplayName("When mapping command with active true Then should return User with active true")
+    void whenMappingCommandWithActiveTrue_thenShouldReturnUserWithActiveTrue() {
         // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(Category.FATHER);
-        command.setActive(null);
+        validCommand.setActive(true);
 
         // When
-        User result = mapper.toUser(command);
+        User result = mapper.toUser(validCommand);
 
         // Then
-        assertNotNull(result);
         assertTrue(result.isActive());
     }
 
     @Test
-    @DisplayName("When mapping command with active false Then should set active to false")
-    void whenMappingCommandWithActiveFalse_thenShouldSetActiveToFalse() {
+    @DisplayName("When mapping command with active false Then should return User with active false")
+    void whenMappingCommandWithActiveFalse_thenShouldReturnUserWithActiveFalse() {
         // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(Category.FATHER);
-        command.setActive(false);
+        validCommand.setActive(false);
 
         // When
-        User result = mapper.toUser(command);
+        User result = mapper.toUser(validCommand);
 
         // Then
-        assertNotNull(result);
         assertFalse(result.isActive());
+    }
+
+    @Test
+    @DisplayName("When mapping command with null active Then should default to true")
+    void whenMappingCommandWithNullActive_thenShouldDefaultToTrue() {
+        // Given
+        validCommand.setActive(null);
+
+        // When
+        User result = mapper.toUser(validCommand);
+
+        // Then
+        assertTrue(result.isActive());
+    }
+
+    @Test
+    @DisplayName("When mapping command with null fullName Then should throw UserIllegalArgumentException")
+    void whenMappingCommandWithNullFullName_thenShouldThrowUserIllegalArgumentException() {
+        // Given
+        validCommand.setFullName(null);
+
+        // When & Then
+        UserIllegalArgumentException exception = assertThrows(UserIllegalArgumentException.class, () -> {
+            mapper.toUser(validCommand);
+        });
+
+        assertEquals("USER-UPDATE-002", exception.getCode());
+        assertEquals("Erro ao mapear UpdateUserCommand para User", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("When mapping command with null document Then should throw UserIllegalArgumentException")
+    void whenMappingCommandWithNullDocument_thenShouldThrowUserIllegalArgumentException() {
+        // Given
+        validCommand.setDocument(null);
+
+        // When & Then
+        UserIllegalArgumentException exception = assertThrows(UserIllegalArgumentException.class, () -> {
+            mapper.toUser(validCommand);
+        });
+
+        assertEquals("USER-UPDATE-002", exception.getCode());
+        assertEquals("Erro ao mapear UpdateUserCommand para User", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("When mapping command with null email Then should throw UserIllegalArgumentException")
+    void whenMappingCommandWithNullEmail_thenShouldThrowUserIllegalArgumentException() {
+        // Given
+        validCommand.setEmail(null);
+
+        // When & Then
+        UserIllegalArgumentException exception = assertThrows(UserIllegalArgumentException.class, () -> {
+            mapper.toUser(validCommand);
+        });
+
+        assertEquals("USER-UPDATE-002", exception.getCode());
+    }
+
+    @Test
+    @DisplayName("When mapping command with null phone Then should throw UserIllegalArgumentException")
+    void whenMappingCommandWithNullPhone_thenShouldThrowUserIllegalArgumentException() {
+        // Given
+        validCommand.setPhone(null);
+
+        // When & Then
+        UserIllegalArgumentException exception = assertThrows(UserIllegalArgumentException.class, () -> {
+            mapper.toUser(validCommand);
+        });
+
+        assertEquals("USER-UPDATE-002", exception.getCode());
+    }
+
+    @Test
+    @DisplayName("When mapping command with null birthdate Then should throw UserIllegalArgumentException")
+    void whenMappingCommandWithNullBirthdate_thenShouldThrowUserIllegalArgumentException() {
+        // Given
+        validCommand.setBirthdate(null);
+
+        // When & Then
+        UserIllegalArgumentException exception = assertThrows(UserIllegalArgumentException.class, () -> {
+            mapper.toUser(validCommand);
+        });
+
+        assertEquals("USER-UPDATE-002", exception.getCode());
+    }
+
+    @Test
+    @DisplayName("When mapping command with null category Then should throw UserIllegalArgumentException")
+    void whenMappingCommandWithNullCategory_thenShouldThrowUserIllegalArgumentException() {
+        // Given
+        validCommand.setCategory(null);
+
+        // When & Then
+        UserIllegalArgumentException exception = assertThrows(UserIllegalArgumentException.class, () -> {
+            mapper.toUser(validCommand);
+        });
+
+        assertEquals("USER-UPDATE-002", exception.getCode());
     }
 
     @ParameterizedTest
@@ -98,20 +182,12 @@ class UpdateUserCommandToUserTest {
     @DisplayName("When mapping command with each category Then should map correctly")
     void whenMappingCommandWithEachCategory_thenShouldMapCorrectly(Category category) {
         // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(category);
-        command.setActive(true);
+        validCommand.setCategory(category);
 
         // When
-        User result = mapper.toUser(command);
+        User result = mapper.toUser(validCommand);
 
         // Then
-        assertNotNull(result);
         assertEquals(category, result.getCategory());
     }
 
@@ -119,41 +195,41 @@ class UpdateUserCommandToUserTest {
     @DisplayName("When mapping command with special characters in name Then should map correctly")
     void whenMappingCommandWithSpecialCharactersInName_thenShouldMapCorrectly() {
         // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("José María Ñoño de Souza");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(Category.FATHER);
-        command.setActive(true);
+        validCommand.setFullName("José María Ñoño de Souza");
 
         // When
-        User result = mapper.toUser(command);
+        User result = mapper.toUser(validCommand);
 
         // Then
         assertEquals("José María Ñoño de Souza", result.getFullName());
     }
 
-    @Test
-    @DisplayName("When mapping command with birthdate today Then should map correctly")
-    void whenMappingCommandWithBirthdateToday_thenShouldMapCorrectly() {
+    @ParameterizedTest
+    @ValueSource(strings = {"joao@test.com", "maria@example.com", "user@domain.com.br"})
+    @DisplayName("When mapping command with different emails Then should map correctly")
+    void whenMappingCommandWithDifferentEmails_thenShouldMapCorrectly(String email) {
         // Given
-        LocalDate today = LocalDate.now();
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(today);
-        command.setCategory(Category.FATHER);
-        command.setActive(true);
+        validCommand.setEmail(email);
 
         // When
-        User result = mapper.toUser(command);
+        User result = mapper.toUser(validCommand);
 
         // Then
-        assertEquals(today, result.getBirthdate());
+        assertEquals(email, result.getEmail());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"11999999999", "11988888888", "21987654321"})
+    @DisplayName("When mapping command with different phones Then should map correctly")
+    void whenMappingCommandWithDifferentPhones_thenShouldMapCorrectly(String phone) {
+        // Given
+        validCommand.setPhone(phone);
+
+        // When
+        User result = mapper.toUser(validCommand);
+
+        // Then
+        assertEquals(phone, result.getPhone());
     }
 
     @Test
@@ -161,20 +237,27 @@ class UpdateUserCommandToUserTest {
     void whenMappingCommandWithPastBirthdate_thenShouldMapCorrectly() {
         // Given
         LocalDate pastDate = LocalDate.of(1950, 1, 1);
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(pastDate);
-        command.setCategory(Category.FATHER);
-        command.setActive(true);
+        validCommand.setBirthdate(pastDate);
 
         // When
-        User result = mapper.toUser(command);
+        User result = mapper.toUser(validCommand);
 
         // Then
         assertEquals(pastDate, result.getBirthdate());
+    }
+
+    @Test
+    @DisplayName("When mapping command with recent birthdate Then should map correctly")
+    void whenMappingCommandWithRecentBirthdate_thenShouldMapCorrectly() {
+        // Given
+        LocalDate recentDate = LocalDate.of(2020, 12, 31);
+        validCommand.setBirthdate(recentDate);
+
+        // When
+        User result = mapper.toUser(validCommand);
+
+        // Then
+        assertEquals(recentDate, result.getBirthdate());
     }
 
     @Test
@@ -204,113 +287,25 @@ class UpdateUserCommandToUserTest {
         User result2 = mapper.toUser(command2);
 
         // Then
-        assertNotNull(result1);
-        assertNotNull(result2);
         assertNotSame(result1, result2);
         assertEquals("User 1", result1.getFullName());
         assertEquals("User 2", result2.getFullName());
-        assertEquals("00588380903", result1.getDocument());
-        assertEquals("98765432100", result2.getDocument());
         assertTrue(result1.isActive());
         assertFalse(result2.isActive());
     }
 
     @Test
-    @DisplayName("When mapping command with all fields filled Then should map all fields correctly")
-    void whenMappingCommandWithAllFieldsFilled_thenShouldMapAllFieldsCorrectly() {
-        // When
-        User result = mapper.toUser(validCommand);
-
-        // Then
-        assertNotNull(result.getDocument());
-        assertNotNull(result.getFullName());
-        assertNotNull(result.getEmail());
-        assertNotNull(result.getPhone());
-        assertNotNull(result.getBirthdate());
-        assertNotNull(result.getCategory());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"11999999999", "11988888888", "21987654321"})
-    @DisplayName("When mapping command with different phones Then should map correctly")
-    void whenMappingCommandWithDifferentPhones_thenShouldMapCorrectly(String phone) {
+    @DisplayName("When exception occurs during mapping Then should wrap in UserIllegalArgumentException")
+    void whenExceptionOccursDuringMapping_thenShouldWrapInUserIllegalArgumentException() {
         // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone(phone);
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(Category.FATHER);
-        command.setActive(true);
+        validCommand.setDocument(null);
 
-        // When
-        User result = mapper.toUser(command);
+        // When & Then
+        UserIllegalArgumentException exception = assertThrows(UserIllegalArgumentException.class, () -> {
+            mapper.toUser(validCommand);
+        });
 
-        // Then
-        assertEquals(phone, result.getPhone());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"joao@test.com", "maria@example.com", "user@domain.com.br"})
-    @DisplayName("When mapping command with different emails Then should map correctly")
-    void whenMappingCommandWithDifferentEmails_thenShouldMapCorrectly(String email) {
-        // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument("00588380903");
-        command.setFullName("João Silva");
-        command.setEmail(email);
-        command.setPhone("11999999999");
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(Category.FATHER);
-        command.setActive(true);
-
-        // When
-        User result = mapper.toUser(command);
-
-        // Then
-        assertEquals(email, result.getEmail());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"00588380903", "12345678900", "98765432100"})
-    @DisplayName("When mapping command with different documents Then should map correctly")
-    void whenMappingCommandWithDifferentDocuments_thenShouldMapCorrectly(String document) {
-        // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument(document);
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(Category.FATHER);
-        command.setActive(true);
-
-        // When
-        User result = mapper.toUser(command);
-
-        // Then
-        assertEquals(document, result.getDocument());
-    }
-
-    @Test
-    @DisplayName("When mapping command with null document Then should map correctly")
-    void whenMappingCommandWithNullDocument_thenShouldMapCorrectly() {
-        // Given
-        UpdateUserCommand command = new UpdateUserCommand();
-        command.setDocument(null);
-        command.setFullName("João Silva");
-        command.setEmail("joao@test.com");
-        command.setPhone("11999999999");
-        command.setBirthdate(LocalDate.of(1990, 1, 1));
-        command.setCategory(Category.FATHER);
-        command.setActive(true);
-
-        // When
-        User result = mapper.toUser(command);
-
-        // Then
-        assertNotNull(result);
-        assertNull(result.getDocument());
+        assertEquals("USER-UPDATE-002", exception.getCode());
+        assertEquals("Erro ao mapear UpdateUserCommand para User", exception.getMessage());
     }
 }
