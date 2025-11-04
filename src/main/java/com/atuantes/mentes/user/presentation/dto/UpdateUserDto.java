@@ -18,7 +18,7 @@ public record UpdateUserDto(
         String phone,
 
         @NotNull(message = "A data de nascimento é obrigatória")
-        @PastOrPresent(message = "A data de nascimento deve ser no passado ou presente")
+        @Past(message = "A data de nascimento deve ser no passado")
         LocalDate birthdate,
 
         @NotNull(message = "A categoria é obrigatória")
