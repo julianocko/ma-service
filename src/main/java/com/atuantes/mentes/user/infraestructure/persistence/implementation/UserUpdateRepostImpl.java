@@ -1,8 +1,8 @@
 package com.atuantes.mentes.user.infraestructure.persistence.implementation;
 
 import com.atuantes.mentes.user.domain.entity.User;
+import com.atuantes.mentes.user.domain.exception.UserInternalServerException;
 import com.atuantes.mentes.user.domain.exception.UserNotFoundException;
-import com.atuantes.mentes.user.domain.exception.UserPersistenceException;
 import com.atuantes.mentes.user.domain.message.LogMessage;
 import com.atuantes.mentes.user.domain.message.UserErrorMessage;
 import com.atuantes.mentes.user.domain.service.UserUpdate;
@@ -50,7 +50,7 @@ public class UserUpdateRepostImpl implements UserUpdate {
         } catch (Exception e) {
             log.error(LogMessage.LOG_ERROR.getMessage(), e.getClass().getName(),
                     UserErrorMessage.USER_INSERT_ERROR.getCode(), e.getMessage(), transactionId);
-            throw new UserPersistenceException("USER-UPDATE-ERROR", "Erro ao atualizar usuário");
+            throw new UserInternalServerException("USER-UPDATE-ERROR", "Erro ao atualizar usuário");
         }
     }
 }

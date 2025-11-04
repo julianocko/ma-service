@@ -20,7 +20,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
-public class UserController {
+public class CreateUserController {
 
     private final CreateUserDtoToCommand createUserDtoToCommand;
 

@@ -9,7 +9,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 @NoArgsConstructor
-@Setter @Getter
+@Getter
+@Setter
 public class User {
     private UUID id;
     private String fullName;

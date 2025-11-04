@@ -2,7 +2,7 @@ package com.atuantes.mentes.user.infraestructure.persistence.implementation;
 
 import com.atuantes.mentes.user.domain.entity.Category;
 import com.atuantes.mentes.user.domain.entity.User;
-import com.atuantes.mentes.user.domain.exception.UserPersistenceException;
+import com.atuantes.mentes.user.domain.exception.UserInternalServerException;
 import com.atuantes.mentes.user.domain.message.UserErrorMessage;
 import com.atuantes.mentes.user.infraestructure.persistence.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,7 +81,7 @@ class UserInsertRepostImplTest {
     }
 
     @Test
-    @DisplayName("When inserting user with duplicate document Then should throw UserPersistenceException")
+    @DisplayName("When inserting user with duplicate document Then should throw UserInternalServerException")
     void whenInsertingUserWithDuplicateDocument_thenShouldThrowUserPersistenceException() {
         // Given
         UUID transactionId = UUID.randomUUID();
@@ -99,7 +99,7 @@ class UserInsertRepostImplTest {
                 .thenThrow(new DuplicateKeyException("Duplicate document"));
 
         // When & Then
-        UserPersistenceException exception = assertThrows(UserPersistenceException.class,
+        UserInternalServerException exception = assertThrows(UserInternalServerException.class,
                 () -> userInsertRepostImpl.insert(user, transactionId));
 
         assertEquals(UserErrorMessage.DUPLICATE_DOCUMENT_ERROR.getCode(), exception.getCode());
@@ -111,7 +111,7 @@ class UserInsertRepostImplTest {
     }
 
     @Test
-    @DisplayName("When repository throws generic exception Then should throw UserPersistenceException")
+    @DisplayName("When repository throws generic exception Then should throw UserInternalServerException")
     void whenRepositoryThrowsGenericException_thenShouldThrowUserPersistenceException() {
         // Given
         UUID transactionId = UUID.randomUUID();
@@ -129,7 +129,7 @@ class UserInsertRepostImplTest {
                 .thenThrow(new RuntimeException("Database connection error"));
 
         // When & Then
-        assertThrows(UserPersistenceException.class,
+        assertThrows(UserInternalServerException.class,
                 () -> userInsertRepostImpl.insert(user, transactionId));
 
         verify(userRepository, times(1))

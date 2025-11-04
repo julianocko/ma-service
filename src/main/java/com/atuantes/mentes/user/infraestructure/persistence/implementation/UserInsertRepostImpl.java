@@ -1,7 +1,7 @@
 package com.atuantes.mentes.user.infraestructure.persistence.implementation;
 
 import com.atuantes.mentes.user.domain.entity.User;
-import com.atuantes.mentes.user.domain.exception.UserPersistenceException;
+import com.atuantes.mentes.user.domain.exception.UserInternalServerException;
 import com.atuantes.mentes.user.domain.message.LogMessage;
 import com.atuantes.mentes.user.domain.message.UserErrorMessage;
 import com.atuantes.mentes.user.domain.service.UserInsert;
@@ -35,12 +35,12 @@ public class UserInsertRepostImpl implements UserInsert {
         } catch (DuplicateKeyException e) {
             log.error(LogMessage.LOG_ERROR.getMessage(), e.getClass().getName(),
                     UserErrorMessage.USER_INSERT_ERROR.getCode(), e.getMessage(), transactionId);
-            throw new UserPersistenceException(UserErrorMessage.DUPLICATE_DOCUMENT_ERROR.getCode(),
+            throw new UserInternalServerException(UserErrorMessage.DUPLICATE_DOCUMENT_ERROR.getCode(),
                     UserErrorMessage.DUPLICATE_DOCUMENT_ERROR.getMessage());
         } catch (Exception e) {
             log.error(LogMessage.LOG_ERROR.getMessage(), e.getClass().getName(),
                     UserErrorMessage.USER_INSERT_ERROR.getCode(), e.getMessage(), transactionId);
-            throw new UserPersistenceException(UserErrorMessage.USER_INSERT_ERROR.getCode(), e.getMessage());
+            throw new UserInternalServerException(UserErrorMessage.USER_INSERT_ERROR.getCode(), e.getMessage());
         }
     }
 }

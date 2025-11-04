@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UpdateUserByDocumentController {
 
     private final UpdateUserDtoToCommand updateUserDtoToCommand;

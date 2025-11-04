@@ -28,9 +28,9 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UserController.class)
-@DisplayName("Given UserController")
-class UserControllerTest {
+@WebMvcTest(CreateUserController.class)
+@DisplayName("Given CreateUserController")
+class CreateUserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
