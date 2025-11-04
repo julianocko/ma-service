@@ -1,8 +1,10 @@
 package com.atuantes.mentes.user.infraestructure.persistence.repository;
 
 import com.atuantes.mentes.user.domain.entity.User;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -22,5 +24,9 @@ public interface UserRepository extends Repository<User, UUID> {
             "RETURNING id, active, full_name, document, email, phone, birthdate, category, created_at, updated_at")
     Optional<User> updateByDocument(String document, String fullName, String email, String phone, 
                                     LocalDate birthdate, String category, Boolean active);
+
+    @Modifying
+    @Query("DELETE FROM users.users WHERE document=:document")
+    int deleteByDocument(@Param("document") String document);
 
 }

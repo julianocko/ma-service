@@ -1,11 +1,13 @@
 package com.atuantes.mentes.user.domain.bootstrap;
 
 import com.atuantes.mentes.user.application.usecase.CreateUserUseCase;
+import com.atuantes.mentes.user.application.usecase.DeleteUserByDocumentUseCase;
 import com.atuantes.mentes.user.application.usecase.FindUserByDocumentUseCase;
 import com.atuantes.mentes.user.application.usecase.UpdateUserUseCase;
 import com.atuantes.mentes.user.domain.mapper.CreateUserCommandToUser;
 import com.atuantes.mentes.user.domain.mapper.UpdateUserCommandToUser;
 import com.atuantes.mentes.user.domain.service.FindUserByDocument;
+import com.atuantes.mentes.user.domain.service.UserDelete;
 import com.atuantes.mentes.user.domain.service.UserInsert;
 import com.atuantes.mentes.user.domain.service.UserUpdate;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +37,11 @@ public class BeanFactory {
     @Bean
     public UpdateUserCommandToUser updateUserCommandToUser() {
         return new UpdateUserCommandToUser();
+    }
+
+    @Bean
+    public DeleteUserByDocumentUseCase deleteUserByDocumentUseCase(UserDelete userDelete) {
+        return new DeleteUserByDocumentUseCase(userDelete);
     }
 
 }
