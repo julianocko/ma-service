@@ -4,6 +4,7 @@ import com.atuantes.mentes.user.application.usecase.FindUserByDocumentUseCase;
 import com.atuantes.mentes.user.domain.entity.Category;
 import com.atuantes.mentes.user.domain.entity.User;
 import com.atuantes.mentes.user.domain.exception.UserNotFoundException;
+import com.atuantes.mentes.user.presentation.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Given FindUserByDocumentController")
@@ -46,6 +49,24 @@ class FindUserByDocumentControllerTest {
         expectedUser.setPhone("11999999999");
         expectedUser.setBirthdate(LocalDate.of(1990, 1, 1));
         expectedUser.setCategory(Category.FATHER);
+
+        UserDto expectedDtoUser = new UserDto();
+        expectedDtoUser.setId(UUID.randomUUID());
+        expectedDtoUser.setFullName("João Silva");
+        expectedDtoUser.setActive(true);
+        expectedDtoUser.setDocument("00588380903");
+        expectedDtoUser.setEmail("joao@test.com");
+        expectedDtoUser.setPhone("11999999999");
+        expectedDtoUser.setBirthdate(LocalDate.of(1990, 1, 1));
+        expectedDtoUser.setCategory(Category.FATHER);
+        expectedDtoUser.add(linkTo(methodOn(FindUserByDocumentController.class).findByDocument(transactionId, "00588380903"))
+                .withSelfRel().withType("GET"));
+        expectedDtoUser.add(linkTo(methodOn(DeleteUserByDocumentController.class).deleteByDocument(transactionId, "00588380903"))
+                .withRel("delete").withType("DELETE"));
+        expectedDtoUser.add(linkTo(methodOn(CreateUserController.class).createUser(transactionId, null))
+                .withRel("create").withType("POST"));
+        expectedDtoUser.add(linkTo(methodOn(UpdateUserByDocumentController.class).updateUserByDocument(transactionId,
+                expectedDtoUser.getDocument(), null)).withRel("update").withType("PUT"));
     }
 
     @Test
@@ -57,7 +78,7 @@ class FindUserByDocumentControllerTest {
                 .thenReturn(expectedUser);
 
         // When
-        ResponseEntity<User> response = controller.findByDocument(transactionId, document);
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
 
         // Then
         assertNotNull(response);
@@ -86,7 +107,7 @@ class FindUserByDocumentControllerTest {
                 .thenReturn(expectedUser);
 
         // When
-        ResponseEntity<User> response = controller.findByDocument(transactionId, documentWithMask);
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, documentWithMask);
 
         // Then
         assertNotNull(response);
@@ -141,9 +162,7 @@ class FindUserByDocumentControllerTest {
                 .thenThrow(new UserNotFoundException("USER-404", "User not found"));
 
         // When & Then
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
-            controller.findByDocument(transactionId, document);
-        });
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> controller.findByDocument(transactionId, document));
 
         assertEquals("USER-404", exception.getCode());
         assertEquals("User not found", exception.getMessage());
@@ -161,9 +180,7 @@ class FindUserByDocumentControllerTest {
                 .thenThrow(new RuntimeException("Database error"));
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            controller.findByDocument(transactionId, document);
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.findByDocument(transactionId, document));
 
         assertEquals("Database error", exception.getMessage());
 
@@ -201,11 +218,10 @@ class FindUserByDocumentControllerTest {
                 .thenReturn(expectedUser);
 
         // When
-        ResponseEntity<User> response = controller.findByDocument(transactionId, document);
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
 
         // Then
         assertNotNull(response.getBody());
-        assertSame(expectedUser, response.getBody());
     }
 
     @Test
@@ -241,8 +257,8 @@ class FindUserByDocumentControllerTest {
                 .thenReturn(user2);
 
         // When
-        ResponseEntity<User> response1 = controller.findByDocument(transactionId, document1);
-        ResponseEntity<User> response2 = controller.findByDocument(transactionId, document2);
+        ResponseEntity<UserDto> response1 = controller.findByDocument(transactionId, document1);
+        ResponseEntity<UserDto> response2 = controller.findByDocument(transactionId, document2);
 
         // Then
         assertNotNull(response1.getBody());
@@ -289,5 +305,209 @@ class FindUserByDocumentControllerTest {
         // Then
         verify(findUserByDocumentUseCase, times(1))
                 .findUserByDocument(eq(document), eq(transactionId));
+    }
+
+    @Test
+    @DisplayName("When finding user Then should include self link")
+    void whenFindingUser_thenShouldIncludeSelfLink() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLink("self"));
+        assertEquals("GET", response.getBody().getLink("self").get().getType());
+    }
+
+    @Test
+    @DisplayName("When finding user Then should include delete link")
+    void whenFindingUser_thenShouldIncludeDeleteLink() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLink("delete"));
+        assertEquals("DELETE", response.getBody().getLink("delete").get().getType());
+    }
+
+    @Test
+    @DisplayName("When finding user Then should include create link")
+    void whenFindingUser_thenShouldIncludeCreateLink() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLink("create"));
+        assertEquals("POST", response.getBody().getLink("create").get().getType());
+    }
+
+    @Test
+    @DisplayName("When finding user Then should include update link")
+    void whenFindingUser_thenShouldIncludeUpdateLink() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLink("update"));
+        assertEquals("PUT", response.getBody().getLink("update").get().getType());
+    }
+
+    @Test
+    @DisplayName("When finding user Then should include all four HATEOAS links")
+    void whenFindingUser_thenShouldIncludeAllFourHateoasLinks() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        assertEquals(4, response.getBody().getLinks().toList().size());
+        assertTrue(response.getBody().hasLink("self"));
+        assertTrue(response.getBody().hasLink("delete"));
+        assertTrue(response.getBody().hasLink("create"));
+        assertTrue(response.getBody().hasLink("update"));
+    }
+
+    @Test
+    @DisplayName("When finding user Then self link should point to correct endpoint")
+    void whenFindingUser_thenSelfLinkShouldPointToCorrectEndpoint() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        String selfLink = response.getBody().getLink("self").get().getHref();
+        assertTrue(selfLink.contains("/users/document/" + document));
+    }
+
+    @Test
+    @DisplayName("When finding user Then delete link should point to correct endpoint")
+    void whenFindingUser_thenDeleteLinkShouldPointToCorrectEndpoint() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        String deleteLink = response.getBody().getLink("delete").get().getHref();
+        assertTrue(deleteLink.contains("/users/document/" + document));
+    }
+
+    @Test
+    @DisplayName("When finding user Then create link should point to correct endpoint")
+    void whenFindingUser_thenCreateLinkShouldPointToCorrectEndpoint() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        String createLink = response.getBody().getLink("create").get().getHref();
+        assertTrue(createLink.contains("/users"));
+    }
+
+    @Test
+    @DisplayName("When finding user Then update link should point to correct endpoint with document")
+    void whenFindingUser_thenUpdateLinkShouldPointToCorrectEndpointWithDocument() {
+        // Given
+        String document = "00588380903";
+        when(findUserByDocumentUseCase.findUserByDocument(document, transactionId))
+                .thenReturn(expectedUser);
+
+        // When
+        ResponseEntity<UserDto> response = controller.findByDocument(transactionId, document);
+
+        // Then
+        assertNotNull(response.getBody());
+        String updateLink = response.getBody().getLink("update").get().getHref();
+        assertTrue(updateLink.contains("/users/document/" + document));
+    }
+
+    @Test
+    @DisplayName("When finding user by different documents Then HATEOAS links should use correct document")
+    void whenFindingUserByDifferentDocuments_thenHateoasLinksShouldUseCorrectDocument() {
+        // Given
+        String document1 = "00588380903";
+        String document2 = "98765432100";
+
+        User user1 = new User();
+        user1.setId(UUID.randomUUID());
+        user1.setFullName("User 1");
+        user1.setActive(true);
+        user1.setDocument(document1);
+        user1.setEmail("user1@test.com");
+        user1.setPhone("11999999999");
+        user1.setBirthdate(LocalDate.of(1990, 1, 1));
+        user1.setCategory(Category.FATHER);
+
+        User user2 = new User();
+        user2.setId(UUID.randomUUID());
+        user2.setFullName("User 2");
+        user2.setActive(true);
+        user2.setDocument(document2);
+        user2.setEmail("user2@test.com");
+        user2.setPhone("11988888888");
+        user2.setBirthdate(LocalDate.of(1995, 5, 15));
+        user2.setCategory(Category.MOTHER);
+
+        when(findUserByDocumentUseCase.findUserByDocument(document1, transactionId))
+                .thenReturn(user1);
+        when(findUserByDocumentUseCase.findUserByDocument(document2, transactionId))
+                .thenReturn(user2);
+
+        // When
+        ResponseEntity<UserDto> response1 = controller.findByDocument(transactionId, document1);
+        ResponseEntity<UserDto> response2 = controller.findByDocument(transactionId, document2);
+
+        // Then
+        assertNotNull(response1.getBody());
+        assertNotNull(response2.getBody());
+
+        String selfLink1 = response1.getBody().getLink("self").get().getHref();
+        String selfLink2 = response2.getBody().getLink("self").get().getHref();
+
+        assertTrue(selfLink1.contains(document1));
+        assertTrue(selfLink2.contains(document2));
+        assertNotEquals(selfLink1, selfLink2);
     }
 }

@@ -89,7 +89,7 @@ class CreateUserControllerTest {
         when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -128,7 +128,7 @@ class CreateUserControllerTest {
         when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
@@ -140,7 +140,7 @@ class CreateUserControllerTest {
     @DisplayName("When creating user without transaction id Then should return 400 BAD REQUEST")
     void whenCreatingUserWithoutTransactionId_thenShouldReturn400BadRequest() throws Exception {
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(status().isBadRequest());
@@ -153,7 +153,7 @@ class CreateUserControllerTest {
     @DisplayName("When creating user with invalid transaction id Then should return 400 BAD REQUEST")
     void whenCreatingUserWithInvalidTransactionId_thenShouldReturn400BadRequest() throws Exception {
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", "invalid-uuid")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -174,7 +174,7 @@ class CreateUserControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -198,7 +198,7 @@ class CreateUserControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -219,7 +219,7 @@ class CreateUserControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -240,7 +240,7 @@ class CreateUserControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -261,7 +261,7 @@ class CreateUserControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -282,7 +282,7 @@ class CreateUserControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -297,7 +297,7 @@ class CreateUserControllerTest {
                 .thenThrow(new UserIllegalArgumentException("USER-001", "Invalid document"));
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -315,7 +315,7 @@ class CreateUserControllerTest {
                 .thenThrow(new RuntimeException("Database error"));
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -326,7 +326,7 @@ class CreateUserControllerTest {
     @DisplayName("When request has wrong content type Then should return 415 UNSUPPORTED MEDIA TYPE")
     void whenRequestHasWrongContentType_thenShouldReturn415UnsupportedMediaType() throws Exception {
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -337,7 +337,7 @@ class CreateUserControllerTest {
     @DisplayName("When request has malformed JSON Then should return 400 BAD REQUEST")
     void whenRequestHasMalformedJson_thenShouldReturn400BadRequest() throws Exception {
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{invalid json"))
@@ -361,7 +361,7 @@ class CreateUserControllerTest {
         when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
@@ -376,10 +376,206 @@ class CreateUserControllerTest {
         when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
 
         // When & Then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("When creating user Then should include self link")
+    void whenCreatingUser_thenShouldIncludeSelfLink() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._links.self.type").value("POST"));
+    }
+
+    @Test
+    @DisplayName("When creating user Then should include find link")
+    void whenCreatingUser_thenShouldIncludeFindLink() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.find.href").exists())
+                .andExpect(jsonPath("$._links.find.type").value("GET"));
+    }
+
+    @Test
+    @DisplayName("When creating user Then should include delete link")
+    void whenCreatingUser_thenShouldIncludeDeleteLink() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.delete.href").exists())
+                .andExpect(jsonPath("$._links.delete.type").value("DELETE"));
+    }
+
+    @Test
+    @DisplayName("When creating user Then should include update link")
+    void whenCreatingUser_thenShouldIncludeUpdateLink() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.update.href").exists())
+                .andExpect(jsonPath("$._links.update.type").value("PUT"));
+    }
+
+    @Test
+    @DisplayName("When creating user Then should include all four HATEOAS links")
+    void whenCreatingUser_thenShouldIncludeAllFourHateoasLinks() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._links.find").exists())
+                .andExpect(jsonPath("$._links.delete").exists())
+                .andExpect(jsonPath("$._links.update").exists());
+    }
+
+    @Test
+    @DisplayName("When creating user Then self link should point to users endpoint")
+    void whenCreatingUser_thenSelfLinkShouldPointToUsersEndpoint() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.self.href").value(org.hamcrest.Matchers.containsString("/users")));
+    }
+
+    @Test
+    @DisplayName("When creating user Then find link should contain document")
+    void whenCreatingUser_thenFindLinkShouldContainDocument() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.find.href").value(org.hamcrest.Matchers.containsString("/users/document/00588380903")));
+    }
+
+    @Test
+    @DisplayName("When creating user Then delete link should contain document")
+    void whenCreatingUser_thenDeleteLinkShouldContainDocument() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.delete.href").value(org.hamcrest.Matchers.containsString("/users/document/00588380903")));
+    }
+
+    @Test
+    @DisplayName("When creating user Then update link should contain document")
+    void whenCreatingUser_thenUpdateLinkShouldContainDocument() throws Exception {
+        // Given
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.update.href").value(org.hamcrest.Matchers.containsString("/users/document/00588380903")));
+    }
+
+    @Test
+    @DisplayName("When creating users with different documents Then HATEOAS links should use correct document")
+    void whenCreatingUsersWithDifferentDocuments_thenHateoasLinksShouldUseCorrectDocument() throws Exception {
+        // Given
+        String document1 = "00588380903";
+        String document2 = "98765432100";
+
+        CreateUserDto dto1 = new CreateUserDto(
+                "User 1",
+                document1,
+                "user1@test.com",
+                "11999999999",
+                LocalDate.of(1990, 1, 1),
+                Category.FATHER
+        );
+
+        CreateUserDto dto2 = new CreateUserDto(
+                "User 2",
+                document2,
+                "user2@test.com",
+                "11988888888",
+                LocalDate.of(1995, 5, 15),
+                Category.MOTHER
+        );
+
+        when(createUserDtoToCommand.toCommand(any(CreateUserDto.class))).thenReturn(validCommand);
+        when(createUserUseCase.createUser(any(CreateUserCommand.class), any(UUID.class))).thenReturn(createdUser);
+
+        // When & Then - First user
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto1)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.find.href").value(org.hamcrest.Matchers.containsString(document1)));
+
+        // When & Then - Second user
+        mockMvc.perform(post("/users")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto2)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.find.href").value(org.hamcrest.Matchers.containsString(document2)));
     }
 }

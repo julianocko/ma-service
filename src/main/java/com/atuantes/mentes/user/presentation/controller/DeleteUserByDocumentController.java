@@ -14,7 +14,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class DeleteUserByDocumentController {
 
     private final DeleteUserByDocumentUseCase deleteUserByDocumentUseCase;
