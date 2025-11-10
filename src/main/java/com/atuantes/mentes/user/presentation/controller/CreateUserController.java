@@ -27,7 +27,9 @@ public class CreateUserController {
     private final CreateUserUseCase createUserUseCase;
 
     @PostMapping(
-            produces = MediaType.APPLICATION_JSON_VALUE,
+            produces = {MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE,
+                    MediaType.APPLICATION_YAML_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> createUser (@RequestHeader("x-transaction-id") UUID transactionId,
                                             @RequestBody @Valid CreateUserDto dto) {

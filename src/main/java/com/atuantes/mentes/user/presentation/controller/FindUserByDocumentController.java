@@ -19,7 +19,10 @@ public class FindUserByDocumentController {
 
     private final FindUserByDocumentUseCase findUserByDocumentUseCase;
 
-    @GetMapping(value = "/document/{document}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/document/{document}", produces = {MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_YAML_VALUE}
+    )
     public ResponseEntity<User> findByDocument(@RequestHeader("x-transaction-id") UUID transactionId,
                                                @PathVariable String document) {
         log.info(LogMessage.LOG_START_CONTROLLER.getMessage(), "find user by document", transactionId);
