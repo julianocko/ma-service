@@ -26,7 +26,9 @@ public class UpdateUserByDocumentController {
 
     @PutMapping(
             value = "/document/{document}",
-            produces = MediaType.APPLICATION_JSON_VALUE,
+            produces = {MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE,
+                    MediaType.APPLICATION_YAML_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> updateUserByDocument(
             @RequestHeader("x-transaction-id") UUID transactionId,
