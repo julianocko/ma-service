@@ -1,13 +1,13 @@
 server:
-  port: ${API_PORT:9595}
+  port: ${PORT:9595}
 spring:
   profiles:
-    active: ${ENVIRONMENT:dev}
+    active: ${ENV:dev}
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/maplataformapidb
-    username: ${DB_USER:postgres}
-    password: ${DB_PASS:postgres}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5434}/${DB_NAME:maplataformapidb}
+    username: ${USERNAME:postgres}
+    password: ${PASSWORD:postgres}
   flyway:
     enabled: true
     locations: classpath:db/migration
