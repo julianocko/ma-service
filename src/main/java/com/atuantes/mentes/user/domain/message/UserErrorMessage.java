@@ -21,7 +21,9 @@ public enum UserErrorMessage {
 
     DUPLICATE_DOCUMENT_ERROR("USER-0006", UserMessage.DUPLICATE_DOCUMENT_ERROR.getMessage()),
 
-    USER_NOT_FOUND("USER-0007", "Usuário não encontrado para o documento informado.")
+    USER_NOT_FOUND("USER-0007", "Usuário não encontrado para o documento informado."),
+
+    USER_TO_USER_DTO_MAPPER_ERROR("USER-0008", "Erro ao mapear User para UserDto.")
     ;
 
     private final String code;

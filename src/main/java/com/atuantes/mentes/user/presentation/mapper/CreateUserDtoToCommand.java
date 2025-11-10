@@ -16,12 +16,12 @@ public class CreateUserDtoToCommand {
     public CreateUserCommand toCommand(CreateUserDto dto) {
         try {
             return new CreateUserCommand(
-                    dto.fullName(),
-                    dto.document(),
-                    dto.email(),
-                    dto.phone(),
-                    dto.birthdate(),
-                    dto.category()
+                    dto.getFullName(),
+                    dto.getDocument(),
+                    dto.getEmail(),
+                    dto.getPhone(),
+                    dto.getBirthdate(),
+                    dto.getCategory()
             );
         } catch (UserInvalidDocumentException e) {
             log.error(LogMessage.LOG_ERROR.getMessage(), e.getClass().getSimpleName(), e.getCode(), e.getMessage(), null);

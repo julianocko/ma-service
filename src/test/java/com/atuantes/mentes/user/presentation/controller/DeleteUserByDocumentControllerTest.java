@@ -3,6 +3,7 @@ package com.atuantes.mentes.user.presentation.controller;
 import com.atuantes.mentes.user.application.command.DeleteUserByDocumentCommand;
 import com.atuantes.mentes.user.application.usecase.DeleteUserByDocumentUseCase;
 import com.atuantes.mentes.user.domain.exception.UserNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -113,9 +114,7 @@ class DeleteUserByDocumentControllerTest {
                 .when(deleteUserByDocumentUseCase).execute(any(DeleteUserByDocumentCommand.class), eq(transactionId));
 
         // When & Then
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
-            controller.deleteByDocument(transactionId, document);
-        });
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> controller.deleteByDocument(transactionId, document));
 
         assertEquals("USER-0007", exception.getCode());
         assertTrue(exception.getMessage().contains("Usuário não encontrado"));
@@ -133,9 +132,7 @@ class DeleteUserByDocumentControllerTest {
                 .when(deleteUserByDocumentUseCase).execute(any(DeleteUserByDocumentCommand.class), eq(transactionId));
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            controller.deleteByDocument(transactionId, document);
-        });
+        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> controller.deleteByDocument(transactionId, document));
 
         assertEquals("Database error", exception.getMessage());
 
@@ -251,4 +248,6 @@ class DeleteUserByDocumentControllerTest {
                     cmd.getDocument().equals(normalizedDocument)
                 ), eq(transactionId));
     }
+
+
 }

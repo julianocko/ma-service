@@ -88,7 +88,7 @@ class UpdateUserByDocumentControllerTest {
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -114,7 +114,7 @@ class UpdateUserByDocumentControllerTest {
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/user/document/442.493.853-02")
+        mockMvc.perform(put("/users/document/442.493.853-02")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -143,7 +143,7 @@ class UpdateUserByDocumentControllerTest {
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(inactiveDto)))
@@ -160,7 +160,7 @@ class UpdateUserByDocumentControllerTest {
                 .thenThrow(new UserNotFoundException("USER-404", "User not found for document 44249385302"));
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
@@ -171,7 +171,7 @@ class UpdateUserByDocumentControllerTest {
     @DisplayName("When updating user without transaction id Then should return 400 BAD REQUEST")
     void whenUpdatingUserWithoutTransactionId_thenShouldReturn400BadRequest() throws Exception {
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(status().isBadRequest());
@@ -194,7 +194,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -218,7 +218,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -239,7 +239,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -260,7 +260,7 @@ class UpdateUserByDocumentControllerTest {
         );
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
@@ -275,10 +275,189 @@ class UpdateUserByDocumentControllerTest {
         when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
 
         // When & Then
-        mockMvc.perform(put("/user/document/44249385302")
+        mockMvc.perform(put("/users/document/44249385302")
                         .header("x-transaction-id", transactionId.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("When updating user Then should include self link")
+    void whenUpdatingUser_thenShouldIncludeSelfLink() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._links.self.type").value("PUT"));
+    }
+
+    @Test
+    @DisplayName("When updating user Then should include create link")
+    void whenUpdatingUser_thenShouldIncludeCreateLink() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.create.href").exists())
+                .andExpect(jsonPath("$._links.create.type").value("POST"));
+    }
+
+    @Test
+    @DisplayName("When updating user Then should include find link")
+    void whenUpdatingUser_thenShouldIncludeFindLink() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.find.href").exists())
+                .andExpect(jsonPath("$._links.find.type").value("GET"));
+    }
+
+    @Test
+    @DisplayName("When updating user Then should include delete link")
+    void whenUpdatingUser_thenShouldIncludeDeleteLink() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.delete.href").exists())
+                .andExpect(jsonPath("$._links.delete.type").value("DELETE"));
+    }
+
+    @Test
+    @DisplayName("When updating user Then should include all four HATEOAS links")
+    void whenUpdatingUser_thenShouldIncludeAllFourHateoasLinks() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._links.create").exists())
+                .andExpect(jsonPath("$._links.find").exists())
+                .andExpect(jsonPath("$._links.delete").exists());
+    }
+
+    @Test
+    @DisplayName("When updating user Then self link should point to update endpoint with document")
+    void whenUpdatingUser_thenSelfLinkShouldPointToUpdateEndpointWithDocument() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href").value(org.hamcrest.Matchers.containsString("/users/document/44249385302")));
+    }
+
+    @Test
+    @DisplayName("When updating user Then create link should point to users endpoint")
+    void whenUpdatingUser_thenCreateLinkShouldPointToUsersEndpoint() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.create.href").value(org.hamcrest.Matchers.containsString("/users")));
+    }
+
+    @Test
+    @DisplayName("When updating user Then find link should contain document")
+    void whenUpdatingUser_thenFindLinkShouldContainDocument() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.find.href").value(org.hamcrest.Matchers.containsString("/users/document/44249385302")));
+    }
+
+    @Test
+    @DisplayName("When updating user Then delete link should contain document")
+    void whenUpdatingUser_thenDeleteLinkShouldContainDocument() throws Exception {
+        // Given
+        when(updateUserDtoToCommand.toCommand(eq("44249385302"), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then
+        mockMvc.perform(put("/users/document/44249385302")
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.delete.href").value(org.hamcrest.Matchers.containsString("/users/document/44249385302")));
+    }
+
+    @Test
+    @DisplayName("When updating users with different documents Then HATEOAS links should use correct document")
+    void whenUpdatingUsersWithDifferentDocuments_thenHateoasLinksShouldUseCorrectDocument() throws Exception {
+        // Given
+        String document1 = "44249385302";
+        String document2 = "98765432100";
+
+        when(updateUserDtoToCommand.toCommand(eq(document1), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserDtoToCommand.toCommand(eq(document2), any(UpdateUserDto.class))).thenReturn(validCommand);
+        when(updateUserUseCase.updateUser(any(UpdateUserCommand.class), any(UUID.class))).thenReturn(updatedUser);
+
+        // When & Then - First document
+        mockMvc.perform(put("/users/document/" + document1)
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.find.href").value(org.hamcrest.Matchers.containsString(document1)));
+
+        // When & Then - Second document
+        mockMvc.perform(put("/users/document/" + document2)
+                        .header("x-transaction-id", transactionId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.find.href").value(org.hamcrest.Matchers.containsString(document2)));
     }
 }
